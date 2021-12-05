@@ -21,3 +21,9 @@ pub fn vec_str_to_int(input: Vec<String>) -> Vec<i32> {
     .map(|x| x.parse::<i32>().unwrap())
     .collect()
 }
+
+pub fn swap_nums(a: &mut i32, b: &mut i32) {
+    *a ^= *b;
+    *b ^= *a;
+    *a ^= *b;
+}
