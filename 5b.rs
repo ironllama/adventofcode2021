@@ -45,7 +45,7 @@ fn main() {
             let mut start = line[0][1];
             let mut end = line[1][1];
             if start > end {
-                usrlib::swap_nums(&mut start, &mut end);
+                std::mem::swap(&mut start, &mut end);
             }
             for x in start..end + 1 {  // Draw along Y (vertical)
                 field[x as usize][line[0][0] as usize] += 1;
@@ -55,7 +55,7 @@ fn main() {
             let mut start = line[0][0];
             let mut end = line[1][0];
             if start > end {
-                usrlib::swap_nums(&mut start, &mut end);
+                std::mem::swap(&mut start, &mut end);
             }
             for y in start..end + 1 {  // Draw along X (horizontal)
                 field[line[0][1] as usize][y as usize] += 1;
@@ -69,8 +69,8 @@ fn main() {
             // println!("[{},{}] -> [{},{}]", start_x, start_y, end_x, end_y);
 
             if start_x > end_x {
-                usrlib::swap_nums(&mut start_x, &mut end_x);
-                usrlib::swap_nums(&mut start_y, &mut end_y);
+                std::mem::swap(&mut start_x, &mut end_x);
+                std::mem::swap(&mut start_y, &mut end_y);
             }
             for i in 0..(end_x - start_x) + 1 {
                 let curr_x = start_x + i;

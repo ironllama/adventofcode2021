@@ -22,8 +22,9 @@ pub fn vec_str_to_int(input: Vec<String>) -> Vec<i32> {
     .collect()
 }
 
-pub fn swap_nums(a: &mut i32, b: &mut i32) {
-    *a ^= *b;
-    *b ^= *a;
-    *a ^= *b;
-}
+// https://stackoverflow.com/questions/31798737/how-to-swap-two-variables
+// pub fn swap_nums(a: &mut i32, b: &mut i32) {
+//     *a ^= *b;
+//     *b ^= *a;
+//     *a ^= *b;
+// }
