@@ -1,6 +1,7 @@
 pub mod usrlib;  // Yay, abstraction.
 
 fn main() {
+    let before = std::time::Instant::now();
     // let input_stuff = vec![
     //     "3,4,3,1,2"
     // ];
@@ -54,8 +55,8 @@ fn main() {
     }
 
     println!("TOTAL: {}", total_fish);
+    println!("Elapsed time: {:.2?}", before.elapsed());
 }
-
 
 
 
