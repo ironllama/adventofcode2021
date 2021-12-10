@@ -30,21 +30,6 @@ fn main() {
     // ];
     let input_stuff = usrlib::vec_lines_from_file("4.in.txt");
 
-    // Function that returns if/when a specific row will win.
-    fn check_row(in_row: &Vec<&str>, called_nums: &Vec<&str>) -> i32 {
-        let mut num_matches = 0;
-        let mut last_match = 0;
-        for (idx, num) in called_nums.iter().enumerate() {
-            if in_row.contains(num) {
-                num_matches += 1;
-                if num_matches == in_row.len() {  // If all the numbers match...
-                    last_match = idx as i32;
-                    break;
-                }
-            }
-        }
-        return last_match;
-    }
 
     // Preprocess all the boards into a Vector of boards
     let called_nums: Vec<&str> = input_stuff[0].split(',').collect();
@@ -80,7 +65,25 @@ fn main() {
     });
     // println!("{:?}", boards);
 
-    // Find winning board.
+
+    // Function that returns if/when a specific row will win.
+    fn check_row(in_row: &Vec<&str>, called_nums: &Vec<&str>) -> i32 {
+        let mut num_matches = 0;
+        let mut last_match = 0;
+        for (idx, num) in called_nums.iter().enumerate() {
+            if in_row.contains(num) {
+                num_matches += 1;
+                if num_matches == in_row.len() {  // If all the numbers match...
+                    last_match = idx as i32;
+                    break;
+                }
+            }
+        }
+        return last_match;
+    }
+
+    // This will loop through all the boards, and determine if each board will ever win and how many calls it will take to win, and create a Board for them.
+    // It will place all the Boards and the number it takes each Board to win in a vector.
     #[derive(Debug)]  // To be able to use println Debug
     struct Board {
         board_idx: i32,
@@ -124,13 +127,15 @@ fn main() {
         winning_order.push(this_board);
     }
 
+    // Sort the list of Boards by number of calls it takes each board to win.
     winning_order.sort_by(|a, b| a.winning_idx.cmp(&b.winning_idx));
     // println!("ALL BOARDS: {:?}", winning_order);
     // println!("FINAL: BOARD: {:?}", winning_order.last());
 
+    // Get the last Board that can win, per puzzle requirement.
     let board_won = winning_order.last().unwrap();
 
-    // Flatten wininng board for easier scoring.
+    // Flatten winning Board for easier scoring. Turn the vector of vector of vector of strings into a single vector of ints.
     let (called_nums_until_win, _) = called_nums.split_at(board_won.winning_idx as usize + 1);
     let mut left_overs = board_won.winning_board.iter().fold(vec![], | mut acc, line | {
         for num in line {
@@ -141,7 +146,7 @@ fn main() {
     });
     // println!("FLAT ALL: {:?}", left_overs);
 
-    // Remove called numbers.
+    // Remove called numbers. Could have folded into the above loop?
     for num_str in called_nums_until_win.iter() {
         let num_int = num_str.parse::<i32>().unwrap();
         left_overs.retain(|&x| x != num_int);
