@@ -30,21 +30,6 @@ fn main() {
     // ];
     let input_stuff = usrlib::vec_lines_from_file("4.in.txt");
 
-    // Function that returns if/when a specific row will win.
-    fn check_row(in_row: &Vec<&str>, called_nums: &Vec<&str>) -> i32 {
-        let mut num_matches = 0;
-        let mut last_match = 0;
-        for (idx, num) in called_nums.iter().enumerate() {
-            if in_row.contains(num) {
-                num_matches += 1;
-                if num_matches == in_row.len() {
-                    last_match = idx as i32;
-                    break;
-                }
-            }
-        }
-        return last_match;
-    }
 
     // Preprocess all the boards into a Vector of boards
     let called_nums: Vec<&str> = input_stuff[0].split(',').collect();
@@ -80,6 +65,22 @@ fn main() {
     });
     // println!("{:?}", boards);
 
+    // Function that returns if/when a specific row will win.
+    fn check_row(in_row: &Vec<&str>, called_nums: &Vec<&str>) -> i32 {
+        let mut num_matches = 0;
+        let mut last_match = 0;
+        for (idx, num) in called_nums.iter().enumerate() {
+            if in_row.contains(num) {
+                num_matches += 1;
+                if num_matches == in_row.len() {
+                    last_match = idx as i32;
+                    break;
+                }
+            }
+        }
+        return last_match;
+    }
+
     // Find winning board.
     let mut winning_idx = 0;
     let mut winning_num = 0;
@@ -103,7 +104,7 @@ fn main() {
     }
     // println!("FINAL: BOARD: {:?} TYPE: {} ROW: {:?} NUM: {} IDX: {}", winning_board, winning_type, winning_row, winning_num, winning_idx);
 
-    // Flatten wininng board for easier scoring.
+    // Flatten wininng board for easier scoring. Turn the vector of vector of vector of strings into a single vector of ints.
     let (called_nums_until_win, _) = called_nums.split_at(winning_idx as usize + 1);
     // println!("CALLED: {:?}", called_nums_until_win);
     let mut left_overs = winning_board.iter().fold(vec![], | mut acc, line | {
@@ -118,7 +119,7 @@ fn main() {
     // let flattened_board_int: Vec<i32> = flattened_board.iter().map(|num_str| num_str.parse::<i32>().unwrap()).collect();
     // println!("FLAT ALL: {:?}", left_overs);
 
-    // Remove called numbers.
+    // Remove called numbers. Could have folded into the above loop?
     for num_str in called_nums_until_win.iter() {
         let num_int = num_str.parse::<i32>().unwrap();
         left_overs.retain(|&x| x != num_int);
