@@ -58,6 +58,11 @@ fn main() {
     println!("Elapsed time: {:.2?}", before.elapsed());
 }
 
+    // Other solutions:
+    // RUST, using vector to schedule what will happen on what day.
+    // https://topaz.github.io/paste/#XQAAAQAjAwAAAAAAAAA6nMjJFIj2ze+dGEQGVsnW0MvHUawi2v6FTVrSiamUSClN5byFXJ+qnjO3j4C+hC/vLB7bSTgBxS60RMYxz3gxRam/EGJSnKEnGil4iMLJDNicFN8z8aTFqf9k2p8HmHmYabeo+f5MtfxaX9uZ9gzpQdMWAILZsKUzJQCD4xan6E8yBmIT5JtYNf9rI2Agkb6wqbrZOz8Vd+vPHKcdvrbcy0J+x22iDuV1qHAKDbZJNKN1y22WHih5RV0OclVMNiWuzlJicXM2ox5TUJZkMFGpt+PRHreWLOARdoETXxvX3V9amNxjHJ+qWGGx9rKyPsnZxkK1BHEfhiJEcrCjup6n3h2jj4iSEUuzfBhEEPLQI2ge0L/LqtltfZUOZ9Z1o4MUcRcPq1NaPXHC72iLGidjokHaSvZh/tTMvb1NxbsW0fDqirqeHqarSKnteyWU3KAsEvPRp5p4TzDtSouAWmlp4FkNM2vFARVOc6DJgjZW9Arh+CqBTzzjJi2mlN7pxRzExS6Ig6f/wGPp7w==
+    // Can also use a vector to schedule only the next 8 days.
+    // https://www.reddit.com/r/adventofcode/comments/r9z49j/comment/hod1hs4/?utm_source=share&utm_medium=web2x&context=3
 
 
     // //// BRUTE FORCE. Yea, shows as impractical after around 150+ cycles.
