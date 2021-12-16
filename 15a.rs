@@ -24,6 +24,7 @@ fn main() {
     });
     // println!("{:?}", input_stuff_vec);
 
+    // Calculate distance from end for each point, using the point values as distance scores.
     let mut dists_from_end: Vec<Vec<i32>> = vec![vec![0; input_stuff_vec[0].len()]; input_stuff_vec.len()];
 
     let last_row = input_stuff_vec.len() - 1;
@@ -34,7 +35,8 @@ fn main() {
             let mut r_val = 0;
             let mut d_val = 0;
             let mut p_val = input_stuff_vec[row][col];
-            if row == 0 && col == 0 {
+
+            if row == 0 && col == 0 {  // The starting point is not "entered" so does not contribute to distance.
                 p_val = 0;
             }
 
@@ -56,24 +58,28 @@ fn main() {
                     dists_from_end[row][col] = r_val;
                 }
                 else {
-                    if d_val <= r_val {
+                    if d_val < r_val {
                         dists_from_end[row][col] = d_val;
                     }
                     else {
+                        // if d_val == r_val {
+                        //     println!("EQUAL {} {} {} {} {}", row, col, d_val, r_val, p_val);
+                        // }
                         dists_from_end[row][col] = r_val;
                     }
                 }
             }
         }
     }
+    // Display.
     println!("SCORE: {}", std::cmp::min(dists_from_end[0][1], dists_from_end[1][0]));
     // println!("{:?}", dists_from_end);
     // dists_from_end.iter().for_each(|line| {
-    //     line.iter().for_each(|x| print!("{:2} ", x));
+    //     line.iter().for_each(|x| print!("{:3} ", x));
     //     println!();
     // });
 
-    // Map it!
+    // Map it! Follow the blocks according to least distance. Gather these points as a path.
     let mut curr: (i32, i32) = (0, 0);
     let mut path: Vec<(i32, i32)> = vec![];
     while curr != (last_row as i32, last_col as i32) {
@@ -103,18 +109,19 @@ fn main() {
         }
         path.push(curr);
     }
-    // // println!("PATH: {:?}", path);
+    // Display.
+    // println!("PATH: {:?}", path);
     // for row in 0..input_stuff_vec.len() {
     //     for col in 0..input_stuff_vec[0].len() {
     //         if path.contains(&(row as i32, col as i32)) {
-    //             print!(" ");
+    //             print!("{:1}*", input_stuff_vec[row][col]);
     //         }
     //         else {
     //             if row == 0 && col == 0 {
-    //                 print!(" ");
+    //                 print!("{:1}*", input_stuff_vec[row][col]);
     //             }
     //             else {
-    //                 print!("{}", input_stuff_vec[row][col]);
+    //                 print!("{:1} ", input_stuff_vec[row][col]);
     //             }
     //         }
     //     }
