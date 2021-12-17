@@ -1,19 +1,36 @@
 pub mod usrlib;
 
 fn main() {
-    // let input_stuff = [
-    //     "1163751742",
-    //     "1381373672",
-    //     "2136511328",
-    //     "3694931569",
-    //     "7463417111",
-    //     "1319128137",
-    //     "1359912421",
-    //     "3125421639",
-    //     "1293138521",
-    //     "2311944581",
-    // ];
-    let input_stuff = usrlib::vec_lines_from_file("15.in.txt");
+    let input_stuff = [
+        // "1163751742",
+        // "1381373672",
+        // "2136511328",
+        // "3694931569",
+        // "7463417111",
+        // "1319128137",
+        // "1359912421",
+        // "3125421639",
+        // "1293138521",
+        // "2311944581",
+
+        // "09111",
+        // "22341",
+        // "43521",
+        // "35627",
+
+        // "0243",
+        // "9235",
+        // "1322",
+        // "1992",
+        // "1117",
+
+        "02754564",
+        "92911116",
+        "11614514",
+        "52116611",
+        "16434341",
+    ];
+    // let input_stuff = usrlib::vec_lines_from_file("15.in.txt");
 
     // Get the input data the way I want to use it -- vector of vector of integers.
     let input_stuff_vec: Vec<Vec<i32>> = input_stuff.iter().fold(vec![], | mut acc, line | {
@@ -83,30 +100,54 @@ fn main() {
     let mut curr: (i32, i32) = (0, 0);
     let mut path: Vec<(i32, i32)> = vec![];
     while curr != (last_row as i32, last_col as i32) {
-        let mut d_val = 0;
+        // println!("CURR: {:?}", curr);
+
+        let mut u_val = i32::MAX;
+        if curr.0 > 0 {
+            u_val = dists_from_end[(curr.0 - 1) as usize][curr.1 as usize];
+        }
+
+        let mut d_val = i32::MAX;
         if curr.0 < last_row as i32 {
             d_val = dists_from_end[(curr.0 + 1) as usize][curr.1 as usize];
         }
 
-        let mut r_val = 0;
+        let mut l_val = i32::MAX;
+        if curr.1 > 0 {
+            l_val = dists_from_end[curr.0 as usize][(curr.1 - 1) as usize];
+        }
+
+        let mut r_val = i32::MAX;
         if curr.1 < last_col as i32 {
             r_val = dists_from_end[curr.0 as usize][(curr.1 + 1) as usize];
         }
+        // println!("VALS: {} {} {} {}", u_val, d_val, l_val, r_val);
 
-        if r_val == 0 {
-            curr = (curr.0 + 1, curr.1);
-        }
-        else if d_val == 0 {
-            curr = (curr.0, curr.1 + 1);
-        }
-        else {
-            if r_val > 0 && r_val < d_val {
-                curr = (curr.0, curr.1 + 1);
-            }
-            else {
-                curr = (curr.0 + 1, curr.1);
-            }
-        }
+        let next_step: i32 = *[u_val, d_val, l_val, r_val].iter().min().unwrap();
+        // println!("NS: {:?}", next_step);
+        curr = match next_step {
+            u if u == u_val => (curr.0 - 1, curr.1),
+            l if l == l_val => (curr.0, curr.1 - 1),
+            d if d == d_val => (curr.0 + 1, curr.1),
+            _ => (curr.0, curr.1 + 1),
+            // r if r == r_val => (curr.0, curr.1 + 1),
+            // _ => (curr.0, curr.1 - 1),
+        };
+
+        // if r_val == 0 {
+        //     curr = (curr.0 + 1, curr.1);
+        // }
+        // else if d_val == 0 {
+        //     curr = (curr.0, curr.1 + 1);
+        // }
+        // else {
+        //     if r_val > 0 && r_val < d_val {
+        //         curr = (curr.0, curr.1 + 1);
+        //     }
+        //     else {
+        //         curr = (curr.0 + 1, curr.1);
+        //     }
+        // }
         path.push(curr);
     }
     // Display.
@@ -127,6 +168,22 @@ fn main() {
     //     }
     //     println!();
     // }
+    for row in 0..dists_from_end.len() {
+        for col in 0..dists_from_end[0].len() {
+            if path.contains(&(row as i32, col as i32)) {
+                print!("{:3}*", dists_from_end[row][col]);
+            }
+            else {
+                if row == 0 && col == 0 {
+                    print!("{:3}*", dists_from_end[row][col]);
+                }
+                else {
+                    print!("{:3} ", dists_from_end[row][col]);
+                }
+            }
+        }
+        println!();
+    }
 
     let total_score: i32 = path.iter().fold(0, | acc, x | acc + input_stuff_vec[x.0 as usize][x.1 as usize]);
     println!("SCORE: {}", total_score);
