@@ -1,5 +1,7 @@
 pub mod usrlib;
 
+use std::collections::VecDeque;
+
 fn main() {
     let input_stuff = [
         "--- scanner 0 ---",
@@ -156,5 +158,50 @@ fn main() {
     input_stuff_vec.push(scanner_vec);  // Don't forget the last set!
     // println!("INPUT: {:?}", input_stuff_vec);
 
-    
+    // for one in 0..(input_stuff_vec.len() - 1) {
+    //     for two in (one + 1)..input_stuff_vec.len() {
+            let one = 0;
+            let two = 0;
+            let one_vec = &input_stuff_vec[one];
+            let two_vec: VecDeque<(i32, i32, i32)> = VecDeque::from(input_stuff_vec[two]);
+
+            if one_vec.len() != two_vec.len() {
+                panic!("PROBLEMS with LENGTHS");
+            }
+
+            let matches = 0;
+            for dos_rotate in 0..two_vec.len() {
+                two_vec.rotate_left(dos_rotate);
+
+                for dos in 0..two_vec.len() {
+                    let mut offsets = (0, 0, 0);
+                    let uno_start: (i32, i32, i32) = one_vec[dos];
+                    let dos_start: (i32, i32, i32) = two_vec[dos];
+                    // println!("STARTS: {:?} {:?}", uno_start, dos_start);
+
+                    if dos == 0 {
+                        offsets = (uno_start.1 - dos_start.1, uno_start.2 - dos_start.2, uno_start.3 - dos_start.3);
+                        println!("OFFSET: {:?}", offsets);
+                        matches += 1;
+                    }
+                    else {
+                        if (dos_start.1 - offsets.1) == uno_start.1
+                            && (dos_start.2 - offsets.2) == uno_start.2
+                            && (dos_start.3 - offsets.3) == uno_start.3
+                        {
+                            matches += 1;
+                        }
+                    }
+                }
+
+                if matches >= 12 { // Found a pair and orientation that matches!
+                    break;
+                }
+            }
+
+            if matches >= 12 {
+
+            }
+    //     }
+    // }
 }
