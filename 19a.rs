@@ -161,47 +161,54 @@ fn main() {
     // for one in 0..(input_stuff_vec.len() - 1) {
     //     for two in (one + 1)..input_stuff_vec.len() {
             let one = 0;
-            let two = 0;
+            let two = 1;
             let one_vec = &input_stuff_vec[one];
-            let two_vec: VecDeque<(i32, i32, i32)> = VecDeque::from(input_stuff_vec[two]);
+            let mut two_vec: VecDeque<(i32, i32, i32)> = VecDeque::from(input_stuff_vec[two].clone());
 
             if one_vec.len() != two_vec.len() {
                 panic!("PROBLEMS with LENGTHS");
             }
 
-            let matches = 0;
+            // let mut matches = 0;
+            let mut matches: Vec<(i32, i32, i32)> = vec![];
             for dos_rotate in 0..two_vec.len() {
                 two_vec.rotate_left(dos_rotate);
+                
+                let mut offsets = (0, 0, 0);
 
                 for dos in 0..two_vec.len() {
-                    let mut offsets = (0, 0, 0);
                     let uno_start: (i32, i32, i32) = one_vec[dos];
                     let dos_start: (i32, i32, i32) = two_vec[dos];
-                    // println!("STARTS: {:?} {:?}", uno_start, dos_start);
+                    println!("STARTS: {:?} {:?}", uno_start, dos_start);
 
                     if dos == 0 {
-                        offsets = (uno_start.1 - dos_start.1, uno_start.2 - dos_start.2, uno_start.3 - dos_start.3);
+                        offsets = (uno_start.0 - dos_start.0, uno_start.1 - dos_start.1, uno_start.2 - dos_start.2);
                         println!("OFFSET: {:?}", offsets);
-                        matches += 1;
+                        // matches += 1;
+                        matches.push(uno_start);
                     }
                     else {
-                        if (dos_start.1 - offsets.1) == uno_start.1
+                        if (dos_start.0 - offsets.0) == uno_start.0
+                            && (dos_start.1 - offsets.1) == uno_start.1
                             && (dos_start.2 - offsets.2) == uno_start.2
-                            && (dos_start.3 - offsets.3) == uno_start.3
                         {
-                            matches += 1;
+                            // matches += 1;
+                            matches.push(uno_start);
                         }
                     }
                 }
 
-                if matches >= 12 { // Found a pair and orientation that matches!
+                if matches.len() >= 12 { // Found a pair and orientation that matches! matches);
                     break;
                 }
             }
 
-            if matches >= 12 {
+            // if matches >= 12 {
 
-            }
+            // }
+            // println!("MATCHES {:?}", matches);
+            matches.sort();
+            matches.iter().for_each(|x| println!("{:?}", x));
     //     }
     // }
 }
