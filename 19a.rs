@@ -158,6 +158,61 @@ fn main() {
     input_stuff_vec.push(scanner_vec);  // Don't forget the last set!
     // println!("INPUT: {:?}", input_stuff_vec);
 
+    fn compare_beacons(one_vec: &Vec<(i32, i32, i32)>, two_vec: &mut VecDeque<(i32, i32, i32)>) -> Vec<(i32, i32, i32)> {
+        let mut scanner_matches: Vec<(i32, i32, i32)> = vec![];
+        // Start comparing the two scanners' beacon lists.
+        for dos_rotate in 0..two_vec.len() {  // Try all the beacons as the "origin" beacon.
+            two_vec.rotate_left(dos_rotate);
+
+            let mut offsets = (0, 0, 0);
+
+            println!("COMPARE");
+            for dos in 0..two_vec.len() {
+                let uno_start: (i32, i32, i32) = one_vec[dos];
+                let dos_start: (i32, i32, i32) = two_vec[dos];
+                println!("\tSTARTS: {:?} {:?}", uno_start, dos_start);
+
+                if dos == 0 {
+                    offsets = (uno_start.0 - dos_start.0, uno_start.1 - dos_start.1, uno_start.2 - dos_start.2);
+                    println!("\tOFFSET: {:?}", offsets);
+                    // matches += 1;
+                    scanner_matches.push(uno_start);
+                }
+                else {
+                    if (dos_start.0 - offsets.0) == uno_start.0
+                        && (dos_start.1 - offsets.1) == uno_start.1
+                        && (dos_start.2 - offsets.2) == uno_start.2
+                    {
+                        // matches += 1;
+                        scanner_matches.push(uno_start);
+                    }
+                }
+            }
+
+            if scanner_matches.len() >= 12 { // Found a pair and orientation that matches!);
+                break;
+            }
+        }
+
+        scanner_matches
+    }
+
+    fn rotate_beacons(beacon_list: Vec<(i32, i32, i32)>, orientation: i32) -> Vec<(i32, i32, i32)> {
+        let new_list: Vec<(i32, i32, i32)> = beacon_list.clone();  // Do we even need to clone? Might be able to just edit original.
+
+        match orientation {
+            0 => new_list = beacon_list,
+            1 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2) && tup.2 *= -1),  // Around X, 90deg -- Y to the back
+            2 => new_list.iter_mut().for_each(|tup| tup.1 *= -1 ),  // Around X 180deg
+            3 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around X, 90deg -- Y to the back
+
+        }
+
+        new_list
+    }
+
+
+    let mut matches: Vec<Vec<(i32, i32, i32)>> = vec![];
     // for one in 0..(input_stuff_vec.len() - 1) {
     //     for two in (one + 1)..input_stuff_vec.len() {
             let one = 0;
@@ -169,46 +224,21 @@ fn main() {
                 panic!("PROBLEMS with LENGTHS");
             }
 
+            matches.push(compare_beacons(&one_vec, &mut two_vec));
             // let mut matches = 0;
-            let mut matches: Vec<(i32, i32, i32)> = vec![];
-            for dos_rotate in 0..two_vec.len() {
-                two_vec.rotate_left(dos_rotate);
-                
-                let mut offsets = (0, 0, 0);
 
-                for dos in 0..two_vec.len() {
-                    let uno_start: (i32, i32, i32) = one_vec[dos];
-                    let dos_start: (i32, i32, i32) = two_vec[dos];
-                    println!("STARTS: {:?} {:?}", uno_start, dos_start);
 
-                    if dos == 0 {
-                        offsets = (uno_start.0 - dos_start.0, uno_start.1 - dos_start.1, uno_start.2 - dos_start.2);
-                        println!("OFFSET: {:?}", offsets);
-                        // matches += 1;
-                        matches.push(uno_start);
-                    }
-                    else {
-                        if (dos_start.0 - offsets.0) == uno_start.0
-                            && (dos_start.1 - offsets.1) == uno_start.1
-                            && (dos_start.2 - offsets.2) == uno_start.2
-                        {
-                            // matches += 1;
-                            matches.push(uno_start);
-                        }
-                    }
-                }
-
-                if matches.len() >= 12 { // Found a pair and orientation that matches! matches);
-                    break;
-                }
-            }
 
             // if matches >= 12 {
 
             // }
             // println!("MATCHES {:?}", matches);
             matches.sort();
-            matches.iter().for_each(|x| println!("{:?}", x));
+            // matches.iter().for_each(|line| line.iter().for_each(|x| println!("{:?}", x));
+            for (scan_idx, scan_matches) in matches.iter().enumerate() {
+                println!("SCANNER {}", scan_idx);
+                scan_matches.iter().for_each(|x| println!("{:?}", x));
+            }
     //     }
     // }
 }
