@@ -4,8 +4,8 @@ fn main() {
     let starting_1 = 8;
     let starting_2 = 4;
 
-    // let total_turns = 100;
-    let total_turns = 1000;
+    // let max_score = 100;
+    let max_score = 1000;
 
     // Roll the dice to get 3 combined rolls. Returns the total of the 3 rolls.
     // Could have also used a generator for each of the two dice, as they return a predictable pattern of results.
@@ -20,7 +20,7 @@ fn main() {
     let mut turn = 1;
     let mut dice_rolls = 0;
     // Spaces are tracked as 0-9 for easy use of modulo. Tradeoff is some complexity when to convert it to 1-10.
-    while players[0][1] < total_turns && players[1][1] < total_turns {
+    while players[0][1] < max_score && players[1][1] < max_score {
         let next_roll = roll_dice(&mut main_dice);
         dice_rolls += 3;
 
