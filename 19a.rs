@@ -4,6 +4,46 @@ use std::collections::VecDeque;
 
 fn main() {
     let input_stuff = [
+        // "--- scanner 0 ---",
+        // "-1,-1,1",
+        // "-2,-2,2",
+        // "-3,-3,3",
+        // "-2,-3,1",
+        // "5,6,-4",
+        // "8,0,7",
+        // "",
+        // "--- scanner 1 ---",
+        // "1,-1,1",
+        // "2,-2,2",
+        // "3,-3,3",
+        // "2,-1,3",
+        // "-5,4,-6",
+        // "-8,-7,0",
+        // "",
+        // "--- scanner 2 ---",
+        // "-1,-1,-1",
+        // "-2,-2,-2",
+        // "-3,-3,-3",
+        // "-1,-3,-2",
+        // "4,6,5",
+        // "-7,0,8",
+        // "",
+        // "--- scanner 3 ---",
+        // "1,1,-1",
+        // "2,2,-2",
+        // "3,3,-3",
+        // "1,3,-2",
+        // "-4,-6,5",
+        // "7,0,8",
+        // "",
+        // "--- scanner 4 ---",
+        // "1,1,1",
+        // "2,2,2",
+        // "3,3,3",
+        // "3,1,2",
+        // "-6,-4,-5",
+        // "0,7,-8",
+
         "--- scanner 0 ---",
         "404,-588,-901",
         "528,-643,409",
@@ -149,7 +189,7 @@ fn main() {
             input_stuff_vec.push(scanner_vec);
             scanner_vec = vec![];
         }
-        else if input_stuff[idx].chars().collect::<Vec<char>>()[0] != '-' {
+        else if input_stuff[idx].chars().collect::<Vec<char>>()[1] != '-' {  // Need to get second -, since negative numbers also start with -
             let new_coords_vec: Vec<i32> = input_stuff[idx].split(',').map(|x| x.parse::<i32>().unwrap()).collect();
             let new_coords: (i32, i32, i32) = (new_coords_vec[0], new_coords_vec[1], new_coords_vec[2]);
             scanner_vec.push(new_coords);
@@ -160,111 +200,195 @@ fn main() {
 
     fn compare_beacons(one_vec: &Vec<(i32, i32, i32)>, two_vec: &mut VecDeque<(i32, i32, i32)>) -> Vec<(i32, i32, i32)> {
         let mut scanner_matches: Vec<(i32, i32, i32)> = vec![];
-        // Start comparing the two scanners' beacon lists.
-        for dos_rotate in 0..two_vec.len() {  // Try all the beacons as the "origin" beacon.
-            two_vec.rotate_left(dos_rotate);
 
+        // Start comparing the two scanners' beacon lists.
+        for _uno in 0..two_vec.len() {  // Try all the beacons as the "origin" beacon.
+            let uno_vertex: (i32, i32, i32) = one_vec[0];
+            scanner_matches = vec![];
             let mut offsets = (0, 0, 0);
 
-            println!("COMPARE");
-            for dos in 0..two_vec.len() {
-                let uno_start: (i32, i32, i32) = one_vec[dos];
-                let dos_start: (i32, i32, i32) = two_vec[dos];
-                println!("\tSTARTS: {:?} {:?}", uno_start, dos_start);
+            let dos_vertex: (i32, i32, i32) = two_vec[0];
+            offsets = (dos_vertex.0 - uno_vertex.0, dos_vertex.1 - uno_vertex.1, dos_vertex.2 - uno_vertex.2);
+            println!("\tOFFSET: {:?}", offsets);
+            // let offset_vertex: VecDeque<(i32, i32, i32)> = two_vec.clone();
 
-                if dos == 0 {
-                    offsets = (uno_start.0 - dos_start.0, uno_start.1 - dos_start.1, uno_start.2 - dos_start.2);
-                    println!("\tOFFSET: {:?}", offsets);
-                    // matches += 1;
-                    scanner_matches.push(uno_start);
+            two_vec.iter().for_each(|xyz| {
+                let new_xyz = (xyz.0 - offsets.0, xyz.1 - offsets.1, xyz.2 - offsets.2);
+                // if offsets == (-68, 1246, 43) {
+                //     println!("\t\tCOMP: {:?} - {:?} = {:?}", xyz, offsets, new_xyz);
+                // }
+               if one_vec.contains(&new_xyz) {
+                    // println!("MATCHES! {:?}", new_xyz);
+                    scanner_matches.push(new_xyz);
                 }
-                else {
-                    if (dos_start.0 - offsets.0) == uno_start.0
-                        && (dos_start.1 - offsets.1) == uno_start.1
-                        && (dos_start.2 - offsets.2) == uno_start.2
-                    {
-                        // matches += 1;
-                        scanner_matches.push(uno_start);
-                    }
-                }
-            }
+            });
 
+            // if scanner_matches.len() >= 6 { // Found a pair and orientation that matches!);
             if scanner_matches.len() >= 12 { // Found a pair and orientation that matches!);
+                println!("COMPARE MATCHED!");
                 break;
             }
+
+            two_vec.rotate_left(1);  // Move vertices over by 1 -- try a different point as "origin".
         }
+
+
+
+        // // 'outer: for _uno in 0..one_vec.len() {  // Try all the beacons as the "origin" beacon.
+        // 'outer: for _dos_rotate in 0..two_vec.len() {  // Try all combinations of pairs between one and two.
+        //         let mut offsets = (0, 0, 0);
+        //         scanner_matches = vec![];
+
+        //         // println!("COMPARE");
+        //         for dos in 0..two_vec.len() {  // Test all the vertices as pairs -- both first, both second, both third, etc.
+        //             let uno_vertex: (i32, i32, i32) = one_vec[dos];
+        //             let dos_vertex: (i32, i32, i32) = two_vec[dos];
+        //             // println!("\tSTARTS: {:?} {:?}", uno_vertex, dos_vertex);
+
+        //             if dos == 0 {  // First set defines the offset used by the rest of the comparisons in the set.
+        //                 // offsets = (uno_vertex.0 - dos_vertex.0, uno_vertex.1 - dos_vertex.1, uno_vertex.2 - dos_vertex.2);
+        //                 // println!("\tOFFSET CALC: {:?} - {:?}", dos_vertex.0, uno_vertex.0);
+        //                 offsets = (dos_vertex.0 - uno_vertex.0, dos_vertex.1 - uno_vertex.1, dos_vertex.2 - uno_vertex.2);
+        //                 println!("\tOFFSET: {:?}", offsets);
+        //                 // matches += 1;
+        //                 scanner_matches.push(uno_vertex);
+        //             }
+        //             else {
+        //                 // println!("\t\tCOMP: {:?} {:?} {:?}", dos_vertex.0, offsets.0, uno_vertex.0);
+        //                 if offsets == (-68, 1246, 43) {
+        //                     println!("\t\tCOMP: {:?} - {:?} = ({:?}) vs {:?}", dos_vertex.0, offsets.0, dos_vertex.0 - offsets.0, uno_vertex.0);
+        //                 }
+        //                 if (dos_vertex.0 - offsets.0) == uno_vertex.0
+        //                     && (dos_vertex.1 - offsets.1) == uno_vertex.1
+        //                     && (dos_vertex.2 - offsets.2) == uno_vertex.2
+        //                 {
+        //                     // matches += 1;
+        //                     scanner_matches.push(uno_vertex);
+        //                 }
+        //             }
+        //         }
+
+        //         if scanner_matches.len() >= 6 { // Found a pair and orientation that matches!);
+        //         // if scanner_matches.len() >= 12 { // Found a pair and orientation that matches!);
+        //             println!("COMPARE MATCHED!");
+        //             break 'outer;
+        //         }
+
+        //         two_vec.rotate_left(1);  // Move vertices over by 1 -- try a different point as "origin".
+        //     }
+        // // }
 
         scanner_matches
     }
 
-    fn rotate_beacons(beacon_list: Vec<(i32, i32, i32)>, orientation: i32) -> Vec<(i32, i32, i32)> {
-        let new_list: Vec<(i32, i32, i32)> = beacon_list.clone();  // Do we even need to clone? Might be able to just edit original.
+    fn rotate_beacons(beacon_list: &mut VecDeque<(i32, i32, i32)>, orientation: i32) {
+        // let new_list: VecDeque<(i32, i32, i32)> = beacon_list;  // Do we even need to clone? Might be able to just edit original.
 
-        fn clockwise() {  // Right to up -- about the Z
+        // Right to up -- about the Z -- Around X, 90deg -- Y to the right
+        // let mut clockwise = || beacon_list.iter_mut().for_each(|tup| std::mem::swap(&mut tup.0, &mut tup.1));
+        // let mut flip_clock = || beacon_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.1 *= -1; });
+        // let mut anti_clock = || beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.1); tup.0 *= -1; tup.1 *= -1; });
+        fn clockwise(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.1); tup.1 *= -1; }); }
+        fn flip_clock(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.1 *= -1; }); }
+        fn anti_clock(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.1); tup.0 *= -1; }); }
 
-        }
+        // Right to back -- about the Y -- Around Y, 90deg -- X to the back
+        // let mut spin = || beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.2); tup.2 *= -1; });
+        // let mut flip_spin = || beacon_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.2 *= -1 });
+        // let mut anti_spin = || beacon_list.iter_mut().for_each(|tup| std::mem::swap(&mut tup.0, &mut tup.2));
+        fn spin(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.2); tup.2 *= -1; }); }
+        fn flip_spin(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.2 *= -1 }); }
+        fn anti_spin(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.0, &mut tup.2); tup.0 *= -1 }); }
 
-        fn spin() {  // Right to back -- about the Y
-
-        }
-
-        fn flip() {  // Front to up -- about the X
-
-        }
+        // Front to up -- about the X -- Around Y, 90deg -- Y to the back
+        // let mut flip = || beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.1, &mut tup.2); tup.2 *= -1; });
+        // let mut anti_flip = || beacon_list.iter_mut().for_each(|tup| std::mem::swap(&mut tup.1, &mut tup.2));
+        fn flip(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.1, &mut tup.2); tup.2 *= -1; }); }
+        fn anti_flip(beacon_list: &mut VecDeque<(i32, i32, i32)>) { beacon_list.iter_mut().for_each(|tup| { std::mem::swap(&mut tup.1, &mut tup.2); tup.1 *= -1; }); }
 
         match orientation {
-            0 => new_list = beacon_list,
-            1 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2) && tup.2 *= -1),  // Around X, 90deg -- Y to the back
-            2 => new_list.iter_mut().for_each(|tup| { tup.1 *= -1; tup.2 *= -1 }),  // Around X 180deg
-            3 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around X, 90deg -- Y to the front
+            0 => (),  // Original
+            1 => clockwise(beacon_list),
+            2 => flip_clock(beacon_list),
+            3 => anti_clock(beacon_list),
 
+            4 => { spin(beacon_list) }
+            5 => { spin(beacon_list); clockwise(beacon_list) }
+            6 => { spin(beacon_list); flip_clock(beacon_list) }
+            7 => { spin(beacon_list); anti_clock(beacon_list) }
 
+            8 => { flip_spin(beacon_list) }
+            9 => { flip_spin(beacon_list); clockwise(beacon_list) }
+            10 => { flip_spin(beacon_list); flip_clock(beacon_list) }
+            11 => { flip_spin(beacon_list); anti_clock(beacon_list) }
 
+            12 => { anti_spin(beacon_list) }
+            13 => { anti_spin(beacon_list); clockwise(beacon_list) }
+            14 => { anti_spin(beacon_list); anti_clock(beacon_list) }
+            15 => { anti_spin(beacon_list); anti_clock(beacon_list) }
 
-            4 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.2) && tup.2 *= -1),  // Around Y, 90deg -- X to the back
-            5 => new_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.2 *= -1 }),  // Around Y 180deg
-            6 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around Y, 90deg -- X to the front
-            9 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1)),  // Around Z, 90deg -- X up
-            8 => new_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.1 *= -1 }),  // Around Z 180deg
-            7 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1) && tup.1 *= -1),  // Around Z, 90deg -- X down
+            16 => { flip(beacon_list) }
+            17 => { flip(beacon_list); clockwise(beacon_list) }
+            18 => { flip(beacon_list); anti_clock(beacon_list) }
+            19 => { flip(beacon_list); anti_clock(beacon_list) }
 
-              // Around X, 90deg -- Y to the back, around Y, 90deg -- X to the back
-            8 => new_list.iter_mut().for_each(|tup| { std::mem::swap(tup.0, tup.2) && tup.2 *= -1; std::mem::swap(tup.0, tup.2) && tup.2 *= -1 }),
+            20 => { anti_flip(beacon_list) }
+            21 => { anti_flip(beacon_list); clockwise(beacon_list) }
+            22 => { anti_flip(beacon_list); anti_clock(beacon_list) }
+            23 => { anti_flip(beacon_list); anti_clock(beacon_list) }
 
-            8 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1) && tup.1 *= -1),  // Around Z, 90deg -- X down
-        }
-
-        new_list
+            _ => (),
+        };
     }
 
 
-    let mut matches: Vec<Vec<(i32, i32, i32)>> = vec![];
-    // for one in 0..(input_stuff_vec.len() - 1) {
-    //     for two in (one + 1)..input_stuff_vec.len() {
-            let one = 0;
-            let two = 1;
+    // let mut matches: Vec<Vec<(i32, i32, i32)>> = vec![];
+    let mut new_beacons: i32 = 0;
+    // let one = 0;
+    for one in 0..(input_stuff_vec.len() - 1) {
+        println!("SOURCE SCANNER: {}", one);
+        for two in (one + 1)..input_stuff_vec.len() {
+            // let two = 1;
+            // input_stuff_vec[one].sort();
             let one_vec = &input_stuff_vec[one];
             let mut two_vec: VecDeque<(i32, i32, i32)> = VecDeque::from(input_stuff_vec[two].clone());
 
-            if one_vec.len() != two_vec.len() {
-                panic!("PROBLEMS with LENGTHS");
-            }
-
-            matches.push(compare_beacons(&one_vec, &mut two_vec));
-            // let mut matches = 0;
-
-
-
-            // if matches >= 12 {
-
+            // if one_vec.len() != two_vec.len() {
+            //     panic!("PROBLEMS with LENGTHS {:?} {:?}", one_vec, two_vec);
             // }
-            // println!("MATCHES {:?}", matches);
-            matches.sort();
-            // matches.iter().for_each(|line| line.iter().for_each(|x| println!("{:?}", x));
-            for (scan_idx, scan_matches) in matches.iter().enumerate() {
-                println!("SCANNER {}", scan_idx);
-                scan_matches.iter().for_each(|x| println!("{:?}", x));
+
+            // println!("ONE_VEC:");
+            // for vertex in one_vec { println!("{:?}", vertex); }
+
+            for or_idx in 0..24 {  // 24 orientations of the beacon list.
+                println!("\tSOURCE {} TARGET {} ORIENTATION {}", one, two, or_idx);
+                rotate_beacons(&mut two_vec, or_idx);
+                // two_vec.make_contiguous().sort();
+
+                // println!("TWO_VEC:");
+                // for vertex in &two_vec { println!("{:?}", vertex); }
+
+                let mut new_matches: Vec<(i32, i32, i32)> = compare_beacons(&one_vec, &mut two_vec);
+                // if new_matches.len() >= 6 {
+                if new_matches.len() >= 12 {
+                    println!("MATCHES! SCANNER {} AND {}", one, two);
+                    // new_matches.sort();
+                    new_matches.iter().for_each(|x| println!("{:?}", x));
+                    println!();
+
+                    new_beacons += (two_vec.len() - new_matches.len()) as i32;
+                    break;
+                }
             }
-    //     }
-    // }
+
+            // matches.sort();
+            // matches.iter().for_each(|line| line.iter().for_each(|x| println!("{:?}", x));
+            // for (scan_idx, scan_matches) in matches.iter().enumerate() {
+            //     println!("SCANNER {}", scan_idx);
+            //     scan_matches.iter().for_each(|x| println!("{:?}", x));
+            // }
+        }
+    }
+
+    println!("NUM {}", new_beacons);
 }
