@@ -200,12 +200,38 @@ fn main() {
     fn rotate_beacons(beacon_list: Vec<(i32, i32, i32)>, orientation: i32) -> Vec<(i32, i32, i32)> {
         let new_list: Vec<(i32, i32, i32)> = beacon_list.clone();  // Do we even need to clone? Might be able to just edit original.
 
+        fn clockwise() {  // Right to up -- about the Z
+
+        }
+
+        fn spin() {  // Right to back -- about the Y
+
+        }
+
+        fn flip() {  // Front to up -- about the X
+
+        }
+
         match orientation {
             0 => new_list = beacon_list,
             1 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2) && tup.2 *= -1),  // Around X, 90deg -- Y to the back
-            2 => new_list.iter_mut().for_each(|tup| tup.1 *= -1 ),  // Around X 180deg
-            3 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around X, 90deg -- Y to the back
+            2 => new_list.iter_mut().for_each(|tup| { tup.1 *= -1; tup.2 *= -1 }),  // Around X 180deg
+            3 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around X, 90deg -- Y to the front
 
+
+
+
+            4 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.2) && tup.2 *= -1),  // Around Y, 90deg -- X to the back
+            5 => new_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.2 *= -1 }),  // Around Y 180deg
+            6 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.1, tup.2)),  // Around Y, 90deg -- X to the front
+            9 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1)),  // Around Z, 90deg -- X up
+            8 => new_list.iter_mut().for_each(|tup| { tup.0 *= -1; tup.1 *= -1 }),  // Around Z 180deg
+            7 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1) && tup.1 *= -1),  // Around Z, 90deg -- X down
+
+              // Around X, 90deg -- Y to the back, around Y, 90deg -- X to the back
+            8 => new_list.iter_mut().for_each(|tup| { std::mem::swap(tup.0, tup.2) && tup.2 *= -1; std::mem::swap(tup.0, tup.2) && tup.2 *= -1 }),
+
+            8 => new_list.iter_mut().for_each(|tup| std::mem::swap(tup.0, tup.1) && tup.1 *= -1),  // Around Z, 90deg -- X down
         }
 
         new_list
