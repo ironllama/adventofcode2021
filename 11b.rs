@@ -132,7 +132,7 @@ fn main() {
     // let limit = 100;  // No limit!
     // let mut total_flashes = 0;
     let mut cycles = 0;
-    loop {
+    loop {  // Endless loop, instead of limiting. Just waiting until all flash.
         cycles += 1;
         // println!("{}:", cycles);
 
@@ -143,7 +143,7 @@ fn main() {
         // print_vec(&input_stuff_vec);
         // println!("FLASHES: {}", total_flashes);
 
-        if total_flashes == 100 {
+        if total_flashes == 100 {  // 100 is the number of points in puzzle.
             break;
         }
 

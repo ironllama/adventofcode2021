@@ -48,6 +48,7 @@ fn main() {
         println!("");
     }
 
+    // Everyone level up!
     fn step(grid: &mut Vec<Vec<i32>>) {
         // for i in 0..grid.len() {
         //     for k in 0..grid[i].len() {
@@ -61,6 +62,7 @@ fn main() {
                 .for_each(|x| *x += 1 ));
     }
 
+    // Check to see if point has flashed (is 9+), and if flashed check the neighbors not yet checked.
     fn check_point(i: usize, k: usize, grid: &mut Vec<Vec<i32>>, points_flashed: &mut Vec<Vec<usize>>) {
         if grid[i][k] > 9  && !points_flashed.contains(&vec![i, k]) {  // If flash
             points_flashed.push(vec![i, k]);
@@ -103,6 +105,7 @@ fn main() {
         }
     }
 
+    // Start the flash finding process -- since check_point already ignores already checked points and checks neighbors, just iterate through all points.
     fn find_flashes(grid: &mut Vec<Vec<i32>>) {
         let mut points_flashed: Vec<Vec<usize>> = vec![];  // Running record of points that have flashed and been visited (had neighbors incremented).
 
@@ -113,6 +116,7 @@ fn main() {
         }
     }
 
+    // Reset all the 9+ to 0's and count them as a flash.
     fn reset(grid: &mut Vec<Vec<i32>>) -> i32 {
         let mut num_flashes = 0;
 

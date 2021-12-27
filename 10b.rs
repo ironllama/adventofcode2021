@@ -19,7 +19,7 @@ fn main() {
     let mut all_points = vec![];
     for line in input_stuff {
         let mut brackets = vec![];
-        let mut corrupted = false;
+        let mut corrupted = false;  // Add to track if each line is a corrupted line or not.
         let line_chars: Vec<char> = line.chars().collect();
         for this_char in line_chars {
             if open_brackets.contains(&this_char) {
@@ -42,8 +42,10 @@ fn main() {
                 }
             }
         }
+
+        // Scoring done for each line.
         if !corrupted {
-            brackets.reverse();
+            brackets.reverse();  // Reverse the stack so I can iterate from the beginning. I guess you could also loop backwards.
             // println!("LEFT: {:?}", brackets);
             let mut points = 0;
             for to_close in brackets {

@@ -70,7 +70,7 @@ fn main() {
     let mut graph: HashMap<String, Vec<String>> = HashMap::new();
 
     // Utility function to help create a lookup table out of the input.
-    fn add_node (in_name: String, in_edge: String, graph: &mut HashMap<String, Vec<String>>) {
+    fn add_node(in_name: String, in_edge: String, graph: &mut HashMap<String, Vec<String>>) {
         match graph.get_mut(&in_name) {
             Some(x) => if !x.contains(&in_edge) { x.push(in_edge.clone()) },
             None => {
@@ -95,7 +95,7 @@ fn main() {
 
 
     // Traverse the graph-ish thing! DFS-ish!
-    fn visit (graph: &HashMap<String, Vec<String>>, in_node: &String, path: &Vec<String>, visited: &Vec<String>, all_paths: &mut Vec<String>, one_pass: &String) {
+    fn visit(graph: &HashMap<String, Vec<String>>, in_node: &String, path: &Vec<String>, visited: &Vec<String>, all_paths: &mut Vec<String>, one_pass: &String) {
         // println!("VISITING: {}", in_node);
 
         let mut new_path = path.clone();
