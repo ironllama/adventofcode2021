@@ -1,6 +1,7 @@
 pub mod usrlib;
 
 use std::collections::VecDeque;
+use std::collections::HashSet;
 
 fn main() {
     // let input_stuff = [
@@ -186,7 +187,7 @@ fn main() {
     let mut input_stuff_vec: Vec<Vec<(i32, i32, i32)>> = vec![];
     let mut scanner_vec = vec![];
     for idx in 0..input_stuff.len() {
-        if input_stuff[idx].is_empty() {
+        if input_stuff[idx].is_empty() {  // Blank lines between scanners.
             input_stuff_vec.push(scanner_vec);
             scanner_vec = vec![];
         }
@@ -401,6 +402,8 @@ fn main() {
             // input_stuff_vec[one].sort();
             // let one_vec = &input_stuff_vec[one];
             // let mut two_vec: Vec<(i32, i32, i32)> = input_stuff_vec[two].clone();
+
+            // let one_vec_offset = scanner_offsets[one];
 
             // if one_vec.len() != two_vec.len() {
             //     panic!("PROBLEMS with LENGTHS {:?} {:?}", one_vec, two_vec);
