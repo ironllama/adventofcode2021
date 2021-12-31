@@ -47,6 +47,7 @@ fn main() {
     let last_row = input_stuff_vec.len() - 1;
     let last_col = input_stuff_vec[0].len() - 1;
 
+    // Create a "heat-map" or distance map from the end of the puzzle, using the point values as weights.
     for row in (0..input_stuff_vec.len()).rev() {
         for col in (0..input_stuff_vec[0].len()).rev() {
             let mut r_val = 0;
@@ -88,6 +89,7 @@ fn main() {
             }
         }
     }
+    
     // Display.
     println!("SCORE: {}", std::cmp::min(dists_from_end[0][1], dists_from_end[1][0]));
     // println!("{:?}", dists_from_end);
@@ -150,6 +152,7 @@ fn main() {
         // }
         path.push(curr);
     }
+
     // Display.
     // println!("PATH: {:?}", path);
     // for row in 0..input_stuff_vec.len() {

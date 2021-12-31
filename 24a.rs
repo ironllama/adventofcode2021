@@ -20,6 +20,65 @@ fn main() {
     // ];
     let input_stuff = usrlib::vec_lines_from_file("24.in.txt");
 
+    let num_pos = 14;
+    let lines_per_section = 18;
+    let ops_lines = vec![4, 5, 15];
+
+    let mut ops: Vec<Vec<i64>> = vec![vec![]; ops_lines.len()];
+    for this_pos in 0..num_pos {
+        for (idx, op_num) in ops_lines.iter().enumerate() {  // Indexes of the varying numbers of each section.
+            let offset = lines_per_section * this_pos;
+            ops[idx].push(input_stuff[offset + op_num].split_whitespace().last().unwrap().parse().unwrap());
+        }
+    }
+    // ops[0][digit_pos..].iter().filter(|&x| *x == 26).count() as u32;
+    println!("OPS: {:?}", ops);
+
+    let mut stack: Vec<usize> = vec![0 as usize];
+    let mut stack_iter: usize = 0;
+    let mut final_num: Vec<i64> = vec![0; 14];
+    while !stack.is_empty() {
+        stack_iter += 1;
+        if ops[0][stack_iter] == 26 {
+            let idx_one = stack.pop().unwrap() as usize;
+            // let num_one = ops[2][idx_one];
+            // let num_two = ops[2][stack_iter] * -1;
+            // if num_one < num_two {
+            //     final_num[idx_one] = 9;
+            //     final_num[stack_iter] = 9 - (num_two - num_one);
+            // }
+            // else {
+            //     final_num[stack_iter] = 9;
+            //     final_num[idx_one] = 9 - (num_one - num_two);
+            // }
+            let diff = ops[2][idx_one] + ops[1][stack_iter];
+            // if diff < 0 {
+            //     final_num[idx_one] = (diff * -1) + 1;
+            //     final_num[stack_iter] = 1;
+            // }
+            // else {
+            //     final_num[idx_one] = 1;
+            //     final_num[stack_iter] = 1 + diff;
+            // }
+            if diff < 0 {
+                final_num[idx_one] = 9;
+                final_num[stack_iter] = 9 + diff;
+            }
+            else {
+                final_num[idx_one] = 9 - diff;
+                final_num[stack_iter] = 9;
+            }
+        }
+        else {
+            stack.push(stack_iter);
+        }
+    }
+    // println!("FINAL_NUM: {:?}", final_num);  // 99394899891971
+    print!("FINAL NUM: ");
+    final_num.iter().for_each(|x| print!("{}", x));
+    println!();
+
+
     let mut input_stuff_vec: Vec<Vec<Vec<&str>>> = vec![];
     let mut temp_vec: Vec<Vec<&str>> = vec![];
     for idx in 0..input_stuff.len() {
@@ -40,6 +99,7 @@ fn main() {
     //     println!("SET {}", idxs);
     //     inst_set.iter().for_each(|line| println!("\t{:?}", line));
     // }
+
 
     // Cycle through one set of instructions with the given input.
     fn run_one(input_stuff_vec: &Vec<Vec<&str>>, wxyz: &mut Vec<i64>, input_num: i64) {
@@ -85,6 +145,110 @@ fn main() {
         });
     }
 
+    #[allow(dead_code)]
+    fn test_num(input_stuff_vec: &Vec<Vec<Vec<&str>>>, in_test: String) {
+        let in_test_vec: Vec<i64> = in_test.chars().map(|x| x.to_string().parse::<i64>().unwrap()).collect();
+        let mut wxyz: Vec<i64> = vec![0, 0, 0, 0];
+        for (idx, digit) in in_test_vec.iter().enumerate() {
+            run_one(&input_stuff_vec[idx], &mut wxyz, *digit);
+            println!("{} Z:{}", idx, wxyz[3]);
+        }
+        println!("FINAL: {:?}", wxyz);
+        if wxyz[3] == 0 {
+            println!("WINNER: {} {:?}", in_test, wxyz);
+        }
+    }
+    // test_num(&input_stuff_vec, "31394569391971".to_string());
+    // test_num(&input_stuff_vec, "99999689999296".to_string());
+    // test_num(&input_stuff_vec, "94394569391971".to_string());  // TOO LOW
+    // test_num(&input_stuff_vec, "94394899391971".to_string());  // TOO LOW
+    // test_num(&input_stuff_vec, "97599595979395".to_string());
+    // test_num(&input_stuff_vec, "99394899891971".to_string());  // HIGHEST
+    // test_num(&input_stuff_vec, "92171126131911".to_string());  // LOWEST
+    // test_num(&input_stuff_vec, "99394899991999".to_string());
+    // test_num(&input_stuff_vec, "11191118911999".to_string());
+
+    #[allow(dead_code)]
+    // Instructions translated.
+    fn run_two(ops: &Vec<Vec<i64>>, digit_pos: usize, w: i64, z: i64) -> i64 {
+        if ((z % 26) + ops[1][digit_pos]) != w {                // x = 1 or if ((z % 26) + ops[1][digit_pos]) != w
+            return 26 * (z / 1) + (w + ops[2][digit_pos]);      // ((25 * x) + 1) * (z / ops[0][digit_pos]) + (w + ops[2][digit_pos] * x);
+        } else {                                                // x = 0 or if ((z % 26) + ops[1][digit_pos]) == w
+            return z / 26;                                      // z / ops[0][digit_pos];
+        }
+    }
+
+    // fn run_two_backwards(ops: &Vec<Vec<i64>>, digit_pos: usize, w: i64, target_z: i64) -> i64 {
+    //     if ((z % 26) + ops[1][digit_pos]) != w {  // x = 1
+    //         return 26 * (z / ops[0][digit_pos]) + (w + ops[2][digit_pos]);
+    //     } else {  // x = 0
+    //         return z / ops[0][digit_pos];
+    //     }
+    // }
+
+
+    #[allow(dead_code)]
+    fn test_num_two(ops: &Vec<Vec<i64>>, in_test: String) {
+        let in_test_vec: Vec<i64> = in_test.chars().map(|x| x.to_string().parse::<i64>().unwrap()).collect();
+        let mut z: i64 = 0;
+        for (idx, digit) in in_test_vec.iter().enumerate() {
+            z = run_two(&ops, idx, *digit, z);
+            // println!("{} Z:{}", idx, z);
+        }
+        // println!("FINAL: {:?}", z);
+        if z == 0 {
+            println!("WINNER: {} {:?}", in_test, z);
+        }
+    }
+    // test_num_two(&ops, "94394899391971".to_string());  // TOO LOW
+    // test_num_two(&ops, "97599595976995".to_string());  // TOO LOW
+    // test_num_two(&ops, "97599595979395".to_string());  // TOO LOW
+    // test_num_two(&ops, "99394899891971".to_string());  // HIGHEST
+    // test_num_two(&ops, "92171126131911".to_string());  // LOWEST 
+
+
+    // fn cycle(ops: &Vec<Vec<i64>>, digit_pos: usize, z: i64, id_buff: &String) {
+    fn cycle(ops: &Vec<Vec<i64>>, digit_pos: usize, z: i64, id_buff: &mut Vec<char>) {
+        if digit_pos == 14 {
+            if z == 0 {  // Finished and found!
+                println!("FOUND: {}", id_buff.iter().collect::<String>());
+            }
+            return;  // Finshed!
+        }
+
+        // let num_26s: u32 = ops[0][digit_pos..].iter().filter(|&x| *x == 26).count() as u32;
+        // let limit = 26_i64.pow(num_26s);
+        let limit = 26_i64.pow(4);
+        // println!("{}: LIMIT {}", digit_pos, limit);
+        if z > limit {
+            println!("TOO FAR!");
+            return;
+        }
+
+        for num in (1..=9).rev() {
+            // let new_id = id_buff.clone() + &num.to_string();
+            id_buff[digit_pos] = num.to_string().chars().next().unwrap();
+            println!("TEST: {}", id_buff.iter().collect::<String>());
+            let new_z = run_two(&ops, digit_pos, num, z);
+            // cycle(&ops, digit_pos + 1, new_z, &new_id);
+            cycle(&ops, digit_pos + 1, new_z, id_buff);
+        }
+    }
+    // ops.push(vec![])
+    // cycle(&ops, 0, 0, &"".to_string());
+
+    // let mut id_buff: Vec<char> = vec!['0'; 15];
+    // cycle(&ops, 0, 0, &mut id_buff);
+
+
+    // for i in (1..=9).rev() {
+    //     for j in (1..=9).rev() {
+    //         // let new_nums: String = i.to_string() + &j.to_string() + &"394569391971".to_string();
+    //         // let new_nums: String = i.to_string() + &j.to_string() + &"394879391971".to_string();
+    //         let new_nums: String = i.to_string() + &j.to_string() + &"394899391971".to_string();
+    //         test_num(&input_stuff_vec, new_nums);
+    //     }
+    // }
 
     // Testing with the binary sample.
     // let mut wxyz: Vec<i32> = vec![];
@@ -97,6 +261,7 @@ fn main() {
 
     // For number series like 1231, 1232, 1233, instead of running the algo for the first three digits again for each possible complete number,
     // we store the result of the 1, then 2, then 3, and pass it on to all the possible values of the fourth digit.
+    #[allow(dead_code)]
     fn next_digit(input_stuff_vec: &Vec<Vec<Vec<&str>>>, wxyz: &Vec<i64>, input_num: i64, spot: usize) -> String {
         let limit: usize = 13;
         // let limit: usize = 2;
@@ -128,6 +293,7 @@ fn main() {
         return final_num;
     }
 
+    #[allow(dead_code)]
     fn prev_digit(input_stuff_vec: &Vec<Vec<Vec<&str>>>, wxyz: &Vec<i64>, input_num: i64, spot: usize) -> String {
         // let limit: usize = 13;
         let limit: usize = 0;
@@ -159,6 +325,7 @@ fn main() {
         return final_num;
     }
 
+    #[allow(dead_code)]
     fn maybe_monad(input_stuff_vec: &Vec<Vec<Vec<&str>>>, wxyz: &Vec<i64>, input_num: i64, target: i64, spot: usize) -> String {
         let limit: usize = 0;
         // let limit: usize = 9;
@@ -228,13 +395,89 @@ fn main() {
         return final_num;
     }
 
+
+    #[allow(dead_code)]
+    fn reverse_gen(input_stuff_vec: &Vec<Vec<Vec<&str>>>) {
+        let mut all_valid: Vec<Vec<Vec<i64>>> = vec![vec![vec![0, 0]]];
+        let mut next_matches: Vec<Vec<i64>> = vec![];
+        // let mut possible_max: String = "".to_string();
+
+        for pos in 0..14 {
+            next_matches = vec![];
+            for i in (1..=9).rev() {
+                // for k in 0..26 {
+                let mut k = 1;
+                let mut matches = 0;
+                'outer: loop {
+                    let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+                    run_one(&input_stuff_vec[13 - pos], &mut wxyz, i);
+                    if all_valid[pos].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+                        println!("{}: NUM:{} Z:{} {:?}", pos, i, k, wxyz);
+                        next_matches.push(vec![i, k, wxyz[3]]);
+                        matches += 1;
+                        // if matches == 9 {
+                            // possible_max += &i.to_string();
+                            // break;
+                        // }
+                    }
+                    k += 1;
+                    if k > 456976 {
+                        k = 0;
+                        loop {
+                            let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+                            run_one(&input_stuff_vec[13 - pos], &mut wxyz, i);
+                            if all_valid[pos].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+                                println!("{}: NUM:{} Z:{} {:?}", pos, i, k, wxyz);
+                                next_matches.push(vec![i, k, wxyz[3]]);
+                                matches += 1;
+                                // if matches == 9 {
+                                    // possible_max += &i.to_string();
+                                    // break 'outer;
+                                // }
+                            }
+                            k -= 1;
+                            if k < -456976 {
+                                break 'outer;
+                            }
+                        }
+                    }
+                }
+            } 
+            if next_matches.is_empty() {
+                println!("INCOMPLETE!");
+                break;
+            }
+            all_valid.push(next_matches);
+        }
+        println!("{}: {:?}", all_valid.len(), all_valid[all_valid.len() - 1]);
+        // println!("MAX: {}", possible_max);
+        let mut look_for = &all_valid[all_valid.len() - 1][0];  // Seed with the first item in the last digit list.
+        let mut final_string: String = look_for[0].to_string();
+        for pos in (0..(all_valid.len() - 1)).rev() {  // Start with second to last and go backwards.
+            let this_pos = &all_valid[pos];
+            for digit in (0..this_pos.len()).rev() {
+                if this_pos[digit][1] == look_for[2] {
+                    final_string += &this_pos[digit][0].to_string();
+                    look_for = &this_pos[digit];
+                    break;
+                }
+            }
+        }
+        println!("FINAL: {}", final_string);
+    }
+    // reverse_gen(&input_stuff_vec);
+    // 8913319110
+
+
+
     // let mut wxyz: Vec<i64> = vec![0, 0, 0, 0];
-    // run_one(&input_stuff_vec[0], &mut wxyz, 2);
-    // run_one(&input_stuff_vec[1], &mut wxyz, 5);
-    // println!("{} {:?}", 5, wxyz);
-    // run_one(&input_stuff_vec[0], &mut wxyz, 2);
-    // run_one(&input_stuff_vec[1], &mut wxyz, 6);
-    // println!("{} {:?}", 6, wxyz);
+    // run_one(&input_stuff_vec[0], &mut wxyz, 9);
+    // run_one(&input_stuff_vec[1], &mut wxyz, 4);
+    // // println!("{} {:?}", 5, wxyz);
+    // // run_one(&input_stuff_vec[0], &mut wxyz, 2);
+    // // run_one(&input_stuff_vec[1], &mut wxyz, 6);
+    // // println!("{} {:?}", 6, wxyz);
+    // println!("{:?}", wxyz);
 
     // for i in (1..=9).rev() {
     //     let mut wxyz: Vec<i64> = vec![0, 0, 0, 0];
@@ -242,11 +485,28 @@ fn main() {
     //     println!("{} {:?}", i, wxyz);
     // }
     // println!();
+    // 'outer: for i in (1..=9).rev() {
+    //     // for z in -15000..15000 {
+    //         let mut wxyz: Vec<i64> = vec![0, 0, 0, z];
+    //         // let mut wxyz: Vec<i64> = vec![0, 0, 0, z];
+    //         // let mut wxyz: Vec<i64> = vec![0, 0, 0, 0];
+    //         run_one(&input_stuff_vec[1], &mut wxyz, i);
+    //         // println!("i:{} {:?}", i, wxyz);
+    //         // println!("i:{} z:{} {:?}", i, z, wxyz);
+    //         if wxyz[3] == 1 {
+    //             println!("FOUND! i:{} z:{} {:?}", i, z, wxyz);
+    //             break 'outer;
+    //         }
+    //     // }
+    // }
+
+    // println!();
     // for i in (1..=9).rev() {
-    //     let mut wxyz: Vec<i64> = vec![0, 0, 0, 0];
-    //     run_one(&input_stuff_vec[1], &mut wxyz, i);
+    //     let mut wxyz: Vec<i64> = vec![0, 0, 0, 7];
+    //     run_one(&input_stuff_vec[2], &mut wxyz, i);
     //     println!("{} {:?}", i, wxyz);
     // }
+
     // println!();
     // for i in (1..=9).rev() {
     //     let mut wxyz: Vec<i64> = vec![0, 0, 0, -14];
@@ -287,6 +547,107 @@ fn main() {
     //     println!("{} {:?}", i, wxyz);
     // }
 
+
+    // next_matches = vec![];
+    // // Can be 1-9. Need z to come in between 399 and 615.
+    // for i in (1..=9).rev() {
+    //     // for k in 0..26 {
+    //     let mut k = 1;
+    //     let mut matches = 0;
+    //     loop {
+    //         let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+    //         run_one(&input_stuff_vec[12], &mut wxyz, i);
+    //         if all_valid[1].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+    //             println!("{} {} {:?}", i, k, wxyz);
+    //             next_matches.push(vec![i, k]);
+    //             matches += 1;
+    //             if matches == 9 {
+    //                 break;
+    //             }
+    //         }
+    //         k += 1;
+    //         if k > 50000 {
+    //             break;
+    //         }
+    //     }
+    // } 
+    // all_valid.push(next_matches);
+
+    // next_matches = vec![];
+    // for i in (1..=9).rev() {
+    //     // for k in 0..26 {
+    //     let mut k = 1;
+    //     let mut matches = 0;
+    //     loop {
+    //         let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+    //         run_one(&input_stuff_vec[11], &mut wxyz, i);
+    //         if all_valid[2].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+    //             println!("{} {} {:?}", i, k, wxyz);
+    //             next_matches.push(vec![i, k]);
+    //             matches += 1;
+    //             if matches == 9 {
+    //                 break;
+    //             }
+    //         }
+    //         k += 1;
+    //         if k > 50000 {
+    //             break;
+    //         }
+    //     }
+    // } 
+    // all_valid.push(next_matches);
+
+    // next_matches = vec![];
+    // // Can be 1-9. Need z to come in between 399 and 615.
+    // for i in (1..=9).rev() {
+    //     // for k in 0..26 {
+    //     let mut k = 1;
+    //     let mut matches = 0;
+    //     loop {
+    //         let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+    //         run_one(&input_stuff_vec[10], &mut wxyz, i);
+    //         if all_valid[2].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+    //             println!("{} {} {:?}", i, k, wxyz);
+    //             next_matches.push(vec![i, k]);
+    //             matches += 1;
+    //             if matches == 9 {
+    //                 break;
+    //             }
+    //         }
+    //         k += 1;
+    //         if k > 50000 {
+    //             break;
+    //         }
+    //     }
+    // } 
+    // all_valid.push(next_matches);
+
+    // next_matches = vec![];
+    // // Can be 1-9. Need z to come in between 399 and 615.
+    // for i in (1..=9).rev() {
+    //     // for k in 0..26 {
+    //     let mut k = 1;
+    //     let mut matches = 0;
+    //     loop {
+    //         let mut wxyz: Vec<i64> = vec![0, 0, 0, k];
+    //         run_one(&input_stuff_vec[9], &mut wxyz, i);
+    //         if all_valid[3].iter().map(|x| x[1]).collect::<Vec<i64>>().contains(&wxyz[3]) {
+    //             println!("{} {} {:?}", i, k, wxyz);
+    //             next_matches.push(vec![i, k]);
+    //             matches += 1;
+    //             if matches == 9 {
+    //                 break;
+    //             }
+    //         }
+    //         k += 1;
+    //         if k > 50000 {
+    //             break;
+    //         }
+    //     }
+    // } 
+    // all_valid.push(next_matches);
+
+
     // let mut ins_num = 0;
     // input_stuff_vec.iter().for_each(|ins_set| {
     //     println!("{}", ins_num);
@@ -320,9 +681,9 @@ fn main() {
     // println!("FINAL: {}", final_num);
 
 
-    let wxyz: Vec<i64> = vec![0, 0, 0, 0];
-    let final_num: String = maybe_monad(&input_stuff_vec, &wxyz, 0, 0, 13 as usize);
-    println!("FINAL: {}", final_num);
+    // let wxyz: Vec<i64> = vec![0, 0, 0, 0];
+    // let final_num: String = maybe_monad(&input_stuff_vec, &wxyz, 0, 0, 13 as usize);
+    // println!("FINAL: {}", final_num);
 
 
     // for i in (1..=9).rev() {

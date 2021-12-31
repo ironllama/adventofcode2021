@@ -16,15 +16,7 @@ pub fn vec_lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
 
 // Convert a vector of string into int.
 pub fn vec_str_to_int(input: Vec<String>) -> Vec<i32> {
-    input
-    .iter()
-    .map(|x| x.parse::<i32>().unwrap())
-    .collect()
+    input.iter()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect()
 }
-
-// https://stackoverflow.com/questions/31798737/how-to-swap-two-variables
-// pub fn swap_nums(a: &mut i32, b: &mut i32) {
-//     *a ^= *b;
-//     *b ^= *a;
-//     *a ^= *b;
-// }
