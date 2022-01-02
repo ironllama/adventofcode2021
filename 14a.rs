@@ -60,24 +60,23 @@ fn main() {
     }
 
     // Drive 10 cycles.
-    let mut working = starting.clone();
     // println!("[{}] {}", 0, working.iter().collect::<String>());
     for _idx in 1..=10 {
-        working = cycle(&working, &pairs);
-        // println!("[{}] {:?}", _idx, working.iter().collect::<String>());
+        starting = cycle(&starting, &pairs);
+        // println!("[{}] {:?}", _idx, starting.iter().collect::<String>());
     }
 
     // Count by letter, using HashMap to store totals.
-    let counts: HashMap<char, i32> = working.iter().fold(HashMap::new(), | mut acc, this_char | {
-        match acc.get_mut(&this_char) {
-            Some(x) => *x += 1,
-            None => { acc.insert(*this_char, 1); },
-        }
-        acc
-    });
-    println!("{:?}", counts);
+    let counts: HashMap<char, i32> = starting.iter()
+        .fold(HashMap::new(), | mut acc, this_char | {
+            match acc.get_mut(&this_char) {
+                Some(x) => *x += 1,
+                None => { acc.insert(*this_char, 1); },
+            }
+            acc
+        });
+    // println!("{:?}", counts);
     let mut all_scores: Vec<i32> = counts.values().cloned().collect();  // Flatten HashMap into a Vector. Throw out keys.
     all_scores.sort();
-    // println!("{:?}", all_scores);
     println!("SCORE {:?}", all_scores[all_scores.len() - 1] - all_scores[0]);
 }

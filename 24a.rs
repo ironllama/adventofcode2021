@@ -52,14 +52,6 @@ fn main() {
             //     final_num[idx_one] = 9 - (num_one - num_two);
             // }
             let diff = ops[2][idx_one] + ops[1][stack_iter];
-            // if diff < 0 {
-            //     final_num[idx_one] = (diff * -1) + 1;
-            //     final_num[stack_iter] = 1;
-            // }
-            // else {
-            //     final_num[idx_one] = 1;
-            //     final_num[stack_iter] = 1 + diff;
-            // }
             if diff < 0 {
                 final_num[idx_one] = 9;
                 final_num[stack_iter] = 9 + diff;

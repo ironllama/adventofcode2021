@@ -47,7 +47,7 @@ fn main() {
         let new_space = this_player[0] + next_roll;
         this_player[0] = new_space % 10;
         this_player[1] += this_player[0] + 1;  // 0-9 range converted to 1-10
-        println!("PLAYER {}: ROLL {} BOARD {} SCORE {}", if turn %2 == 1 {'1'} else {'2'}, next_roll, this_player[0] + 1, this_player[1]);
+        // println!("PLAYER {}: ROLL {} BOARD {} SCORE {}", if turn %2 == 1 {'1'} else {'2'}, next_roll, this_player[0] + 1, this_player[1]);
 
         turn += 1;
     }

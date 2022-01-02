@@ -27,14 +27,10 @@ fn main() {
     fn expand(input_stuff_vec: &mut VecDeque<VecDeque<char>>) {
         for idx in 0..input_stuff_vec.len() {
             input_stuff_vec[idx].push_front('.');
-            // input_stuff_vec[idx].push_front('.');
             input_stuff_vec[idx].push_back('.');
-            // input_stuff_vec[idx].push_#ack('.');
         }
         input_stuff_vec.push_front(VecDeque::from(vec!['.'; input_stuff_vec[0].len()]));
-        // input_stuff_vec.push_front(VecDeque::from(vec!['.'; input_stuff_vec[0].len()]));
         input_stuff_vec.push_back(VecDeque::from(vec!['.'; input_stuff_vec[0].len()]));
-        // input_stuff_vec.push_back(VecDeque::from(vec!['.'; input_stuff_vec[0].len()]));
     }
     expand(&mut input_stuff_vec);
     // println!("INPUT: {:?}", input_stuff_vec);

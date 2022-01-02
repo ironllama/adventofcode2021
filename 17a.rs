@@ -1,5 +1,4 @@
 fn main() {
-
     // Highest trajectory is regardless of x value, so we only need the y. And for highest, we want the furthest from 0, or the lowest point on the target.
     let min_y: i32 = -260;
 

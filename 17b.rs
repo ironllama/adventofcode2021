@@ -45,23 +45,17 @@ fn main() {
 
                 // Adjust for drag and gravity for next step.
                 adj_y -= 1;
-                if adj_x > 0 {
-                    adj_x -= 1;
-                }
+                if adj_x > 0 { adj_x -= 1; }
 
                 // Find next step location.
                 pos.0 += adj_x;
                 pos.1 += adj_y;
 
-                if pos.0 > max_x || pos.1 < min_y {  // Shot beyond the target?
-                    break;
-                }
+                if pos.0 > max_x || pos.1 < min_y { break; } // Shot beyond the target?
             }
 
             new_y -= 1;  // Next lower angle.
-            if new_y < min_y {  // Beyond the possible limits?
-                break;
-            }
+            if new_y < min_y { break; } // Beyond the possible limits?
         }
     }
 

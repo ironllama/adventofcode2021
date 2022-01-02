@@ -41,6 +41,8 @@ fn main() {
     });
     // println!("{:?} {:?}", starting, pairs);
 
+    // Display.
+    #[allow(dead_code)]
     fn display_sorted(this_hash: &HashMap<String, i64>) {
         let mut lookup_keys: Vec<&String> = this_hash.keys().collect();
         lookup_keys.sort();
@@ -82,14 +84,13 @@ fn main() {
         // display_sorted(&count_pairs);
         // display_sorted(&count_chars);
     }
-    println!("FINSHED CYCLES:");
-    display_sorted(&count_pairs);
-    display_sorted(&count_chars);
+    // println!("FINSHED CYCLES:");
+    // display_sorted(&count_pairs);
+    // display_sorted(&count_chars);
 
-    let just_nums: Vec<i64> = count_chars.values().cloned().collect();  // Might be better to just use lazy eval, rather than cloned()?
-    let char_min = just_nums.iter().min().unwrap();
-    let char_max = just_nums.iter().max().unwrap();
-    println!("SCORE: {}", *char_max - *char_min);
+    let mut all_scores: Vec<i64> = count_chars.values().cloned().collect();  // Might be better to just use lazy eval, rather than cloned()?
+    all_scores.sort();
+    println!("SCORE: {}", all_scores[all_scores.len() - 1] - all_scores[0]);
 }
 
 

@@ -12,7 +12,9 @@ fn main() {
     // ];
     let input_stuff = usrlib::vec_lines_from_file("16.in.txt");
 
+    // For reference but never used. Instead, just used the included lookup table from instructions.
     // https://codereview.stackexchange.com/questions/228867/converting-a-hexadecimal-string-to-a-binary-string-using-rust-pattern-matching-l
+    #[allow(dead_code)]
     fn convert_to_binary_from_hex(hex: &str) -> String {
         hex[2..].chars().map(to_binary).collect()
     }
@@ -43,10 +45,7 @@ fn main() {
     let input_str: String = input_vec.iter().map(|x| x.to_string()).collect();
     // println!("STR: {}", input_str);
 
-
-    // let mut to_process: Vec<String> = vec![input_str];
-    // let mut total = 0;
-    // while !to_process.is_empty() {  // Was originally going to do it with loops, but realized recursion might be better.usrlib
+    // while !to_process.is_empty() {  // Was originally going to do it with loops, but realized recursion might be better.
 
     fn process_packet(packet: &String, in_total: &mut i32) -> String {
         let ver_str: String = packet.chars().take(3).collect::<Vec<char>>().iter().collect();
@@ -58,7 +57,7 @@ fn main() {
         let type_num = isize::from_str_radix(&type_str, 2).unwrap();
         // println!("TYPE: {}", type_num);
 
-        if type_num == 4 {  // Literal value, look for the final 5 starting with a 0.
+        if type_num == 4 {  // Literal value, look for the final 5 starting with a 0. Also the end of the line for most processing.
             let mut all_strings: String = "".to_string();
             let mut start = 6;
             let mut last_starting_bit = '1';
@@ -111,9 +110,7 @@ fn main() {
     }
 
     let mut total = 0;
-    let mut new_string = input_str;
-    // while new_string.find("1").is_some()  {
-        new_string = process_packet(&new_string, &mut total);
-    // }
-    println!("TOTAL: {} {}", total, new_string);
+    process_packet(&input_str, &mut total);
+
+    println!("TOTAL: {}", total);
 }
