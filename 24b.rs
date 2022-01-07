@@ -26,12 +26,11 @@ fn main() {
 
     let mut ops: Vec<Vec<i64>> = vec![vec![]; ops_lines.len()];
     for this_pos in 0..num_pos {
-        for (idx, op_num) in ops_lines.iter().enumerate() {  // Indexes of the varying numbers of each section.
+        for (idx, op_num) in ops_lines.iter().enumerate() {
             let offset = lines_per_section * this_pos;
             ops[idx].push(input_stuff[offset + op_num].split_whitespace().last().unwrap().parse().unwrap());
         }
     }
-    // ops[0][digit_pos..].iter().filter(|&x| *x == 26).count() as u32;
     println!("OPS: {:?}", ops);
 
     let mut stack: Vec<usize> = vec![0 as usize];
@@ -50,6 +49,8 @@ fn main() {
             //     final_num[idx_one] = 9 - diff;
             //     final_num[stack_iter] = 9;
             // }
+
+            // Same as part a, except, assigning 1's instead of 9's to opposite pairs.
             if diff < 0 {
                 final_num[idx_one] = (diff * -1) + 1;
                 final_num[stack_iter] = 1;
