@@ -3,7 +3,9 @@ pub mod usrlib;
 fn main() {
     let input_stuff = [
         "on x=0..10,y=0..10,z=0..10",
+        // "off x=9..11,y=9..11,z=9..11",
         "on x=6..12,y=6..12,z=6..12",
+
         // "on x=10..12,y=10..12,z=10..12",
         // "on x=11..13,y=11..13,z=11..13",
         // "off x=9..11,y=9..11,z=9..11",
@@ -101,40 +103,168 @@ fn main() {
         return vec![one, two];
     }
 
-    let mut all_cuboids: Vec<Vec<Vec<i32>>> = vec![];  // List of cuboids, described as 3 lists of axes values.
-    for line in &input_stuff_vec {
-        let mut add_cubes = vec![line.1.clone()];
-        for idx_all in 0..all_cuboids.len() {
-            let cuboid: &Vec<Vec<i32>> = &all_cuboids[idx];
-            // let mut new_cubes: Vec<Vec<Vec<i32>>> = vec![cuboid];
-            // if line.0 == "on" {
-            while let Some(this_cuboid) = add_cubes.pop() {
-                let mut temp_cubes: Vec<Vec<i32>> = vec![];
-                for axis in 0..3 {  // Check all 3 axes for intersection!
-                    // if line.1[axis][0] > cuboid[axis][0] || line.1[axis][1] < cuboid[axis][1] { intersecting = true; break; }
-                    if line.1[axis][0] > this_cuboid[axis][0] { temp_cubes = slice_and_dice(axis, this_cuboid[axis][1], &line.1); }
-                    else if line.1[axis][1] < this_cuboid[axis][1] { temp_cubes = slice_and_dice(axis, this_cuboid[axis][0], &line.1); }
-                }
-
-                if !temp_cubes.is_empty() {
-                    // new_cubes.swap_remove(idx);
-                    // add_cubes = new_cubes;
-                    // break;
-                    add_cubes.extend(temp_cubes);
-                }
-                else {
-                    break;
-                }
-            }
-            // }
-            // else {
-
-            // }
+      // If cuboid one completely envelopes cuboid two, then we return a true.
+    fn cuboid_contains(one: &Vec<Vec<i32>>, two: &Vec<Vec<i32>>) -> bool {
+        if one[0][0] <= two[0][0] && one[0][1] >= two[0][1]
+            && one[1][0] <= two[1][0] && one[1][1] >= two[1][1]
+            && one[2][0] <= two[2][0] && one[2][1] >= two[2][1] {
+            return true;
         }
-        all_cuboids.extend(add_cubes);
+        return false;
     }
 
+    fn axis_contains(one: &Vec<i32>, two: &Vec<i32>) -> bool {
+        if one[0] <= two[0] && one[1] >= two[1] {
+            return true;
+        }
+        return false;
+    }
+
+    // Return of (4,0) means one completely envelopes the other.  Compare VOLUMEs?
+    fn intersects(one: &Vec<Vec<i32>>, two: &Vec<Vec<i32>>) -> Option<(usize, i32)> {
+        let mut inter_loc: (usize, i32) = (4, 0);
+        let mut intersection: u8 = 0;
+
+        // if two[0][0] < one[0][0] && two[0][1] > one[0][1]  // If cuboid two completely envelopes cuboid one, then we return a (4,1).
+        //     && two[1][0] < one[1][0] && two[1][1] > one[1][1]
+        //     && two[2][0] < one[2][0] && two[2][1] > one[2][1] {
+        //     return (4, 1);
+        // }
+        if cuboid_contains(&one, &two) {
+        // if cuboid_contains(&two, &one) {
+            // println!("intersects: EVELOPES.");
+            return Some((4, 2));
+        }
+
+        // Else, we find out where to cut up cuboid two.
+        for axis in (0..3).rev() {  // Check all 3 axes for intersection!
+            // print!("intersects: [{}] one{:?} <=> two{:?}: ", axis, one[axis], two[axis]);
+            // Use edges of cuboid one to find a slice plane for cuboid two.
+            // if one[axis][0] > two[axis][0] && one[axis][0] < two[axis][1] {
+            if one[axis][0] < two[axis][0] && one[axis][1] > two[axis][0] {
+                if !axis_contains(&one[axis], &two[axis]) {
+                    inter_loc = (axis, one[axis][1]);
+                }
+                intersection += 1;
+                // println!("...TRUE");
+            }
+            // else if one[axis][1] > two[axis][0] && one[axis][1] < two[axis][1] {
+            else if one[axis][0] < two[axis][1] && one[axis][1] > two[axis][1] {
+                if !axis_contains(&one[axis], &two[axis]) {
+                    inter_loc = (axis, one[axis][0]);
+                }
+                intersection += 1;
+                // println!("...TRUE");
+            }
+            else {
+                // println!("...FALSE");
+            }
+        }
+        if intersection >= 3 && inter_loc != (4, 0) {
+            // println!("intersects: FOUND: {:?}", inter_loc);
+            return Some(inter_loc);
+        }
+        return None;
+    }
+
+    // let mut all_cuboids: Vec<Vec<Vec<i32>>> = vec![input_stuff_vec[0].1.clone()];  // List of cuboids, described as 3 lists of axes values.
+    // for line in &input_stuff_vec {  // For each cuboid A to be processed...
+    //     let mut add_cubes = vec![];  // List of chopped up pieces after processing against all B's.
+
+    //     for idx_all in 0..all_cuboids.len() {  // ...check against all past added cuboids B's. This is the running list of new cuboids.
+    //         let cuboid: &Vec<Vec<i32>> = &all_cuboids[idx_all];  // One previously-added cuboid B for comparison.
+    //         let mut new_cubes: Vec<Vec<Vec<i32>>> = vec![line.1.clone()];  // Gonna chop up A. Temporary basket to store chopped up pieces.
+    //         while let Some(cutme_cuboid) = new_cubes.pop() {  // Check basket of A pieces for intersections with current B.
+    //             if let Some((axis, loc)) = intersects(&cuboid, &cutme_cuboid) {
+    //                 if axis != 4 {  // Only slice/dice if it is not wholly contained. If it is, just ignore it so it disappears.
+    //                     let temp_cubes: Vec<Vec<Vec<i32>>> = slice_and_dice(axis, loc, &cutme_cuboid);
+    //                     // println!("TEMP_CUBES: {:?}", temp_cubes);
+    //                     if !temp_cubes.is_empty() {
+    //                         new_cubes.extend(temp_cubes);  // Put results back into basket.
+    //                         println!("NEW_CUBES: {:?}", new_cubes);
+    //                     }
+    //                 }
+    //                 else {
+    //                     println!("ENVELOPES {:?}. RESULT {:?} NEXT.", (axis, loc), cutme_cuboid);
+    //                 }
+    //             }
+    //             else {
+    //                 add_cubes.push(cutme_cuboid);  // A's that don't intersect go back into the list for future comparison w/ B's.
+    //             }
+    //         }
+    //         // add_cubes.extend(new_cubes);  // Store this group of chopped A's against one particular B.
+    //     }
+    //     all_cuboids.extend(add_cubes);
+    //     // Process next cuboid A.
+    // }
+
+    // Will have to reverse A's and B's for "off". Should have thought about this sooner, as this will work for both on and off.
+    // Above only works for on. ㅠㅠ
+    let mut all_cuboids: Vec<Vec<Vec<i32>>> = vec![input_stuff_vec[0].1.clone()];  // List of cuboids B, described as 3 lists of axes values.
+    for a_cuboid in &input_stuff_vec {  // For each cuboid A to be processed... Gonna try to insert wholesale.
+        println!("STARTING {:?}", a_cuboid);
+        // let a_cuboid: &Vec<Vec<i32>> = input_stuff_vec[line.1 as usize];  // New cuboid A to insert.
+        let mut b_add_cubes = vec![];  // List of chopped up B pieces after processing against all A's.
+
+        for idx_all in 0..all_cuboids.len() {  // ...check against all past added cuboids B's. This is the running list of new cuboids.
+            // let b_cuboid: &Vec<Vec<i32>> = &all_cuboids[idx_all];  // One previously-added cuboid B for comparison.
+
+            // Take out one from the B's and potentially chop it up.
+            let mut new_cubes: Vec<Vec<Vec<i32>>> = vec![all_cuboids[idx_all].clone()];  // Gonna chop up one B. Temporary basket/queue to store chopped up pieces.
+            while let Some(cutme_cuboid) = new_cubes.pop() {  // Check basket of pieces from one B for intersections with current A.
+                if let Some((axis, loc)) = intersects(&a_cuboid.1, &cutme_cuboid) {
+                    if axis != 4 {  // Only slice/dice if it is not wholly contained. If it is, just ignore it so it disappears.
+                        let temp_cubes: Vec<Vec<Vec<i32>>> = slice_and_dice(axis, loc, &cutme_cuboid);
+                        // println!("TEMP_CUBES: {:?}", temp_cubes);
+                        if !temp_cubes.is_empty() {
+                            new_cubes.extend(temp_cubes);  // Put results back into basket to further chop up.
+                            println!("NEW_CUBES: {:?}", new_cubes);
+                        }
+                    }
+                    else {
+                        println!("ENVELOPES {:?}. RESULT {:?} NEXT.", (axis, loc), cutme_cuboid);
+                    }
+                }
+                else {
+                    println!("NO INTERSECTION. ADDED {:?}. NEXT.", cutme_cuboid);
+                    b_add_cubes.push(cutme_cuboid);  // Finished chopping up this piece of B.
+                }
+            }
+            // if !b_add_cubes.is_empty() {  // Potential issue of changing vec while iterating through it?
+            //     all_cuboids.remove(idx_all);
+            //     all_cuboids.extend(b_add_cubes);  // Store this group of chopped B's against one particular A.
+            // }
+        }
+        // if !b_add_cubes.is_empty() {  // Potential issue of changing vec while iterating through it?
+            // all_cuboids.remove(idx_all);
+            // all_cuboids.extend(b_add_cubes);  // Store this group of chopped B's against one particular A.
+            all_cuboids = b_add_cubes;
+            all_cuboids.push(a_cuboid.1.clone());
+        // }
+        // all_cuboids.push(a_cuboid.1.clone());
+        // all_cuboids.push(a_cuboid.1.clone());  // Store this group of chopped B's against one particular A.
+        // all_cuboids.extend(b_add_cubes);
+        // println!("FINISHED {:?}", a_cuboid);
+        println!("CURR all_cuboids: {:?}", all_cuboids);
+        // Process next cuboid A.
+    }
+
+    // println!("RESULT: {:?}", all_cuboids);
+    println!("RESULT:");
+    all_cuboids.iter().for_each(|cuboid| println!("{:?}", cuboid));
+    println!();
+    let total_volume: i64 = all_cuboids.iter().fold(0, |acc, cuboid|
+        acc +
+            // (((cuboid[0][1] - cuboid[0][0]) + 1) as i64
+            // * ((cuboid[1][1] - cuboid[1][0]) + 1) as i64
+            // * ((cuboid[2][1] - cuboid[2][0]) + 1) as i64));
+            ((cuboid[0][1] - cuboid[0][0]) as i64
+            * (cuboid[1][1] - cuboid[1][0]) as i64
+            * (cuboid[2][1] - cuboid[2][0]) as i64));
+    println!("TOTAL: {}", total_volume);
 }
+
+
 
         //     {
         //         let mut axis_and_ranges: Vec<Vec<i32>> = vec![];
